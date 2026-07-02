@@ -468,10 +468,6 @@ That is much more advanced than a simple chatbot and is closer to a production-g
 
 ---
 
-
-
----
-
 ## API and frontend
 
 ### Backend API
@@ -612,11 +608,11 @@ The script reports:
 - Faithfulness, answer relevancy, context precision, context recall, and hallucination rate for RAG quality
 - Average latency and a simple human-in-the-loop clarification rate
 
-# Experimental Results
+### Experimental Results
 
 The system was evaluated on a curated set of insurance policy questions spanning coverage, exclusions, waiting periods, claims, premiums, comparisons, maternity, critical illness, co-payment, network hospitals, eligibility, hospitalization, day-care procedures, pre-existing diseases, and policy definitions.
 
-# Benchmark Setup
+### Benchmark Setup
 - Queries: 58
 - Categories: claim, comparison, copayment, coverage, critical_illness, daycare, definition, eligibility, exclusion, hospitalization, maternity, network_hospital, pre_existing, premium, waiting_period
 - Chunk files: 45
