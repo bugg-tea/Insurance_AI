@@ -41,7 +41,56 @@ Users can:
 
 The system also supports querying an existing knowledge base built from the prepared corpus, so users are not limited to only newly uploaded policies.
 
+## Architecture overview
+
+                    ┌──────────────────────────────┐
+                    │        User Uploads PDF      │
+                    └──────────────┬───────────────┘
+                                   │
+                         PDF Extraction + OCR
+                                   │
+                     Table Extraction + Cleaning
+                                   │
+                     Metadata Enrichment
+                                   │
+                        Table-aware Chunking
+                                   │
+                   Embeddings + FAISS Indexing
+                                   │
+                              BM25 Index
+                                   │
+                                   ▼
+                         Hybrid Retrieval Engine
+                     (Semantic + Lexical + Boosting)
+                                   │
+                              Reranking
+                                   │
+                          Context Compression
+                                   │
+                                   ▼
+                      LangGraph Multi-Agent System
+
+             Query Agent → Retrieval → Policy Agent
+                               │
+                               ├── Claim Agent
+                               ├── Risk Agent
+                               ├── Comparison Agent
+                               └── Recommendation Agent
+
+                                   │
+                           Self-RAG Reflection
+                                   │
+                         Response Validation
+                                   │
+                           Corrective RAG Loop
+                                   │
+                             Report Generator
+                                   │
+                              FastAPI Backend
+                                   │
+                           Streamlit Frontend
 ---
+
 
 ## Core architecture
 
