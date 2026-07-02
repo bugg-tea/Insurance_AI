@@ -41,6 +41,56 @@ Users can:
 
 The system also supports querying an existing knowledge base built from the prepared corpus, so users are not limited to only newly uploaded policies.
 
+## Architecture overview
+
+                    ┌──────────────────────────────┐
+                    │        User Uploads PDF      │
+                    └──────────────┬───────────────┘
+                                   │
+                         PDF Extraction + OCR
+                                   │
+                     Table Extraction + Cleaning
+                                   │
+                     Metadata Enrichment
+                                   │
+                        Table-aware Chunking
+                                   │
+                   Embeddings + FAISS Indexing
+                                   │
+                              BM25 Index
+                                   │
+                                   ▼
+                         Hybrid Retrieval Engine
+                     (Semantic + Lexical + Boosting)
+                                   │
+                              Reranking
+                                   │
+                          Context Compression
+                                   │
+                                   ▼
+                      LangGraph Multi-Agent System
+
+             Query Agent → Retrieval 
+                               ├── Policy Agent
+                               ├── Claim Agent
+                               ├── Risk Agent
+                               ├── Comparison Agent
+                                   │
+                          Recommendation Agent
+
+                                   │
+                           Self-RAG Reflection
+                                   │
+                         Response Validation
+                                   │
+                           Corrective RAG Loop
+                                   │
+                             Report Generator
+                                   │
+                              FastAPI Backend
+                                   │
+                           Streamlit Frontend
+
 ---
 
 ## Core architecture
@@ -418,7 +468,7 @@ That is much more advanced than a simple chatbot and is closer to a production-g
 
 ---
 
-## API and frontend
+
 
 ---
 
@@ -537,3 +587,43 @@ Then open:
 InsureAI is a complete, production-style insurance document assistant that can ingest policy PDFs, understand their structure, retrieve the right evidence from both text and tables, and answer user questions through a multi-agent reasoning pipeline. It is designed to be accurate, explainable, and deployable for real-world policy support workflows.
 
 This project combines document intelligence, retrieval augmentation, agent orchestration, evaluation, and deployment into a single powerful system.
+
+## Experimental evaluation
+
+A lightweight local benchmark runner is included to generate free, portfolio-style metrics from the existing chunk corpus without relying on paid LLM judge APIs.
+
+Run it with:
+
+```bash
+python -m backend.app.rag.benchmark_runner
+```
+
+This produces:
+- [backend/data/benchmark_results.json](backend/data/benchmark_results.json) — machine-readable benchmark output
+- [backend/data/benchmark_report.md](backend/data/benchmark_report.md) — Markdown report ready to paste into the README
+
+The script reports:
+- Recall@5, MRR, and nDCG@5 for retrieval quality
+- Faithfulness, answer relevancy, context precision, context recall, and hallucination rate for RAG quality
+- Average latency and a simple human-in-the-loop clarification rate
+
+# Experimental Results
+
+The system was evaluated on a curated set of insurance policy questions spanning coverage, exclusions, waiting periods, claims, premiums, comparisons, maternity, critical illness, co-payment, network hospitals, eligibility, hospitalization, day-care procedures, pre-existing diseases, and policy definitions.
+
+# Benchmark Setup
+- Queries: 58
+- Categories: claim, comparison, copayment, coverage, critical_illness, daycare, definition, eligibility, exclusion, hospitalization, maternity, network_hospital, pre_existing, premium, waiting_period
+- Chunk files: 45
+- Strategies: naive, hybrid, table_aware, full_agentic
+
+| Strategy | Recall@5 | MRR | nDCG@5 | Faithfulness | Answer Relevancy | Context Precision | Context Recall | Hallucination Rate | Avg Latency (ms) | HITL Clarification Rate |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| naive | 0.862 | 0.735 | 0.764 | 0.655 | 0.563 | 0.971 | 1.000 | 0.345 | 58.8 | 0.345 |
+| hybrid | 0.879 | 0.755 | 0.778 | 0.690 | 0.559 | 0.971 | 1.000 | 0.310 | 57.5 | 0.310 |
+| table_aware | 0.862 | 0.739 | 0.762 | 0.672 | 0.554 | 0.971 | 1.000 | 0.328 | 63.0 | 0.328 |
+| full_agentic | 0.845 | 0.753 | 0.766 | 0.707 | 0.548 | 0.966 | 1.000 | 0.293 | 71.5 | 0.293 |
+
+### Discussion
+
+The benchmark demonstrates the trade-offs introduced by progressively more sophisticated retrieval and reasoning strategies. Hybrid retrieval achieves the highest retrieval effectiveness, obtaining the best Recall@5 (0.879), nDCG@5 (0.778), and lowest average latency among the advanced retrieval approaches. The full agentic pipeline slightly sacrifices retrieval metrics due to additional reasoning and routing steps but achieves the highest faithfulness (0.707) and the lowest hallucination rate (0.293), indicating that the multi-agent workflow improves answer reliability even when retrieval rankings remain similar. These results suggest that the additional orchestration, validation, and corrective reasoning primarily improve answer quality rather than raw retrieval performance, which is consistent with the intended design of the system.
