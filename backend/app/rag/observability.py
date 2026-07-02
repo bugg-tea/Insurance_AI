@@ -39,8 +39,10 @@ from typing import Any, Callable, Dict, Optional
 TRACE_DIR = Path(__file__).resolve().parents[1] / "data" / "traces"
 TRACE_DIR.mkdir(parents=True, exist_ok=True)
 
-_LANGSMITH_ENABLED = bool(os.getenv("LANGCHAIN_TRACING_V2")) and bool(os.getenv("LANGCHAIN_API_KEY"))
-
+_LANGSMITH_ENABLED = (
+    os.getenv("LANGSMITH_TRACING", "").lower() == "true"
+    and bool(os.getenv("LANGSMITH_API_KEY"))
+)
 _traceable = None
 if _LANGSMITH_ENABLED:
     try:

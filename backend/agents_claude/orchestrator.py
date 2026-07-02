@@ -53,6 +53,8 @@ from backend.app.rag.advanced_rag import run_advanced_rag   # === ADDED ===
 import os
 import json
 from langgraph.checkpoint.memory import MemorySaver
+from langsmith import traceable
+
 
 
 _CHUNKS = None
@@ -566,6 +568,7 @@ def get_graph():
 
     return _graph
 
+@traceable(name="Insurance RAG Pipeline")
 # ── PIPELINE ENTRY POINT ──────────────────────────────────────────────────────
 def run_pipeline(raw_query: str, session_id="default", user_id="anonymous", human_response: str | None = None):
 
@@ -612,7 +615,9 @@ def run_pipeline(raw_query: str, session_id="default", user_id="anonymous", huma
         else:
             result = graph.invoke(
                 initial_state,
-                config={"configurable": {"thread_id": session_id}},
+                config={"configurable": {"thread_id": session_id}, "metadata": {
+            "project": "insurance-rag"
+        }},
             )
 
         if isinstance(result, dict):
