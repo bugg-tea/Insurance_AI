@@ -588,6 +588,11 @@ InsureAI is a complete, production-style insurance document assistant that can i
 
 This project combines document intelligence, retrieval augmentation, agent orchestration, evaluation, and deployment into a single powerful system.
 
+
+---
+---
+---
+
 ## Experimental evaluation
 
 A lightweight local benchmark runner is included to generate free, portfolio-style metrics from the existing chunk corpus without relying on paid LLM judge APIs.
