@@ -70,12 +70,13 @@ The system also supports querying an existing knowledge base built from the prep
                                    ▼
                       LangGraph Multi-Agent System
 
-             Query Agent → Retrieval → Policy Agent
-                               │
+             Query Agent → Retrieval 
+                               ├── Policy Agent
                                ├── Claim Agent
                                ├── Risk Agent
                                ├── Comparison Agent
-                               └── Recommendation Agent
+                                   │
+                          Recommendation Agent
 
                                    │
                            Self-RAG Reflection
