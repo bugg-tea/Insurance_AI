@@ -90,8 +90,8 @@ The system also supports querying an existing knowledge base built from the prep
                               FastAPI Backend
                                    │
                            Streamlit Frontend
-
 ---
+
 
 ## Core architecture
 
