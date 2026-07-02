@@ -1,0 +1,7 @@
+# ── FRONTEND ONLY ─────────────────────────────────────────────────────────────
+# The Streamlit container has NO ML code — it talks to the API via HTTP.
+# Keep this intentionally minimal to keep the image small and fast to build.
+
+streamlit>=1.32.0
+requests>=2.31.0
+python-dotenv>=1.0.0

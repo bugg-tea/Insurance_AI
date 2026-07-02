@@ -1,0 +1,139 @@
+# Created by pytest automatically.
+
+# ==========================================
+# Python
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Compiled extensions
+*.so
+*.exe
+tesseract-ocr-w64-setup-5.5.0.20241111.exe
+# Dataset
+Dataset/
+
+# Generated data
+backend/data/
+data/
+# Distribution / packaging
+.Python
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ==========================================
+# Virtual Environments
+# ==========================================
+venv/
+.venv/
+env/
+ENV/
+
+# ==========================================
+# Environment Variables
+# ==========================================
+.env
+.env.*
+!.env.example
+
+# ==========================================
+# IDEs
+# ==========================================
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+*.iml
+
+# ==========================================
+# Jupyter
+# ==========================================
+.ipynb_checkpoints/
+
+# ==========================================
+# Testing / Coverage
+# ==========================================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.cache/
+
+# ==========================================
+# Type Checkers
+# ==========================================
+.mypy_cache/
+.pyre/
+.pytype/
+.ruff_cache/
+
+# ==========================================
+# Logs
+# ==========================================
+*.log
+logs/
+
+# ==========================================
+# OS Files
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# Docker
+# ==========================================
+docker-compose.override.yml
+
+# ==========================================
+# Temporary Files
+# ==========================================
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# ==========================================
+# Model Files (optional)
+# Uncomment if models are downloaded locally
+# ==========================================
+# models/
+# checkpoints/
+# *.ckpt
+# *.pt
+# *.pth
+# *.bin
+# *.onnx
+
+# ==========================================
+# Data (optional)
+# Uncomment if datasets should not be committed
+# ==========================================
+# data/
+# dataset/
+# outputs/
+# cache/
+
+# ==========================================
+# Misc
+# ==========================================
+.python-version

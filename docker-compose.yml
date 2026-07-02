@@ -1,0 +1,93 @@
+# ────────────────────────────────────────────────────────────────────────────
+# docker-compose.yml  —  InsureAI full stack
+#
+# Services:
+#   redis     — short-term session memory (TTL-based, no persistence needed)
+#   api       — FastAPI + LangGraph pipeline + FAISS
+#   frontend  — Streamlit UI
+#
+# Volumes:
+#   backend_data        — FAISS index, chunk JSONs, extracted JSONs (persisted)
+#   huggingface_cache   — sentence-transformers model cache (avoids re-download)
+#
+# Run:
+#   docker compose up --build
+# ────────────────────────────────────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+
+  # ── REDIS ─────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: insureai_redis
+    restart: unless-stopped
+    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── FASTAPI BACKEND ────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: insureai_api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Override Redis URL to use the compose service name
+      REDIS_URL: "redis://redis:6379/0"
+      # Tesseract is installed in the container at this path
+      TESSERACT_CMD: "/usr/bin/tesseract"
+      # API port (matches EXPOSE in Dockerfile.api)
+      API_PORT: "8000"
+      # Hugging Face cache inside the container
+      HF_HOME: "/huggingface_cache"
+      TRANSFORMERS_CACHE: "/huggingface_cache"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/data:/app/backend/data
+    
+      # Cache the sentence-transformers model (avoids ~80MB re-download)
+      - huggingface_cache:/huggingface_cache
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 15s
+      start_period: 90s     # allow time for model load on first start
+      retries: 5
+
+  # ── STREAMLIT FRONTEND ────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: insureai_frontend
+    restart: unless-stopped
+    environment:
+      # The frontend talks to the API service by its compose name
+      API_URL: "http://api:8000"
+      REQUEST_TIMEOUT_SECONDS: "120"
+    ports:
+      - "8501:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+
+# ── NAMED VOLUMES ─────────────────────────────────────────────────────────────
+volumes:
+  backend_data:
+    driver: local
+  huggingface_cache:
+    driver: local
